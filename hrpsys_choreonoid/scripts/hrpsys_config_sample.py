@@ -9,7 +9,7 @@ import OpenHRP
 ### settings
 nameservicehost = 'localhost'
 nameserviceport = 15005
-robotname = 'JAXON_RED(Robot)0' ## name of BodyRTC
+robotname = 'CHIDORI(Robot)0' ## name of BodyRTC
 ###
 
 import sys

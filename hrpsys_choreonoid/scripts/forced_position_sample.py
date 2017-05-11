@@ -4,7 +4,7 @@ import cnoid.Util
 import numpy, time, math
 
 def resetPosition():
-    robotname = "JAXON_RED"
+    robotname = "CHIDORI"
     pos = [0, 0, 1.00]
     rpy = [0, 0, 0]
 
@@ -19,6 +19,6 @@ def resetPosition():
 
     simulatorItem.setForcedPosition(robotItem, trs)
     time.sleep(0.2) ##
-    simulator.clearForcedPositions()
+    simulatorItem.clearForcedPositions()
 
-resetPosition()
+#resetPosition()

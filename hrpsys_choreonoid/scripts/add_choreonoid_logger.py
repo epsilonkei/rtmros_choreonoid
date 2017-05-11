@@ -23,7 +23,7 @@ if __name__ == '__main__':
         args = argparse.Namespace()
         args.host = 'localhost'
         args.port = 15005
-        args.robot = 'JAXON_RED'
+        args.robot = 'CHIDORI'
         args.sync_rtc = 'PDcontroller0'
         args.save = None
         args.clear = None

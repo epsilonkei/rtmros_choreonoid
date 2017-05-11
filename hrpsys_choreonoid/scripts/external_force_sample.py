@@ -2,7 +2,7 @@ import cnoid.Base
 import cnoid.BodyPlugin
 
 def addExternalForce():
-    robotname = "JAXON_RED"
+    robotname = "CHIDORI"
     linkname = "WAIST"
     pos   = [0, 0, 0.2] ## link local position
     force = [100, 0, 0] ## [ N ]
@@ -14,4 +14,4 @@ def addExternalForce():
     if pushingLink:
         simulatorItem.setExternalForce(robotItem, pushingLink, pos, force, tm)
 
-addExternalForce()
+#addExternalForce()
