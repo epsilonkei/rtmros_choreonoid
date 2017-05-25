@@ -1124,6 +1124,10 @@ void read_shared_memory ()
   for(int i = 0; i < command.size(); i++) {
     command[i] = s_shm->ref_angle[i];
   }
+  // khanh simple filter
+  // for(int i = 0; i < command.size(); i++) {
+  //   command[i] = 0.01 * s_shm->ref_angle[i] + 0.99 * command[i];
+  // }
 }
 
 void write_shared_memory ()
