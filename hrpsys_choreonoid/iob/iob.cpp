@@ -106,11 +106,15 @@ void write_shared_memory ();
 void read_shared_memory ();
 ///
 
+//#define Q_FILTER 1
+#define GYRO_ACCEL_FILTER 1
+#define CUR_ANGLE_FILTER 1
 
 #if (defined __APPLE__)
 typedef int clockid_t;
 #define CLOCK_MONOTONIC 0
 #include <mach/mach_time.h>  
+
 int clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
     if (clk_id != CLOCK_MONOTONIC) return -1;
@@ -606,6 +610,7 @@ int open_iob(void)
     s_shm->frame = 0;
     return TRUE;
 }
+
 void iob_update(void)
 {
     if(ip_angleIn->isNew()) {
@@ -1117,9 +1122,9 @@ void *set_shared_memory(key_t _key, size_t _size)
   return ptr;
 }
 
-
-
+#ifdef Q_FILTER
 std::vector<IIRFilter> q_filters;
+#endif
 
 void read_shared_memory ()
 {
@@ -1127,17 +1132,15 @@ void read_shared_memory ()
     iob_step = s_shm->cmd_lock;
     s_shm->cmd_lock = 0;
   }
-  // for(int i = 0; i < command.size(); i++) {
-  //   command[i] = s_shm->ref_angle[i];
-  // }
 
-  // khanh IIR filter
+#ifdef Q_FILTER
+  // IIR filter for q
   static bool firstcall = true;
 
   if(firstcall){
     q_filters.resize(command.size());
     for(int i=0;i<command.size();i++){
-      q_filters[i].setParameterAsBiquad(3, 1.0/2.0, 1/dt);
+      q_filters[i].setParameterAsBiquad(0.001, 1.0/2.0, 1/dt);
       q_filters[i].reset(s_shm->ref_angle[i]);
     }
     firstcall = false;
@@ -1145,6 +1148,11 @@ void read_shared_memory ()
   for(int i=0;i<command.size();i++){
     command[i] = q_filters[i].passFilter(s_shm->ref_angle[i]);
   }
+#else
+  for(int i = 0; i < command.size(); i++) {
+    command[i] = s_shm->ref_angle[i];
+  }
+#endif
 
   // khanh simple filter
   // for(int i = 0; i < command.size(); i++) {
@@ -1153,12 +1161,41 @@ void read_shared_memory ()
 
 }
 
+
+#ifdef GYRO_ACCEL_FILTER
+std::vector<IIRFilter> gyro_filters[3];
+std::vector<IIRFilter> acc_filters[3];
+#endif
+
+#ifdef CUR_ANGLE_FILTER
+std::vector<IIRFilter> cur_angle_filters;
+#endif
+
 void write_shared_memory ()
 {
+
+#ifdef CUR_ANGLE_FILTER
+  // IIR filter for cur_angle
+  static bool firstcall2 = true;
+
+  if (firstcall2) {
+    cur_angle_filters.resize(act_angle.size());
+    for (int i = 0; i < act_angle.size(); i++) {
+      cur_angle_filters[i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+      cur_angle_filters[i].reset(act_angle[i]);
+    }
+    firstcall2 = false;
+  }
+  for(int i = 0; i < act_angle.size(); i++) {
+    s_shm->cur_angle[i] = cur_angle_filters[i].passFilter(act_angle[i]);
+  }
+#else
   //
   for(int i = 0; i < act_angle.size(); i++) {
     s_shm->cur_angle[i] = act_angle[i];
   }
+#endif
+
   //
   for(int i = 0; i < act_torque.size(); i++) {
     s_shm->motor_current[0][i] = act_torque[i];
@@ -1169,6 +1206,43 @@ void write_shared_memory ()
       s_shm->reaction_force[i][j] = forces[i][j];
     }
   }
+
+#ifdef GYRO_ACCEL_FILTER
+  // IIR filter for gyro and accel
+  static bool firstcall = true;
+
+  if (firstcall) {
+    // for gyros
+    for(int j = 0; j < 3; j++) {
+      gyro_filters[j].resize(command.size());
+      for(int i = 0; i < gyros.size(); i++) {
+        gyro_filters[j][i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+        gyro_filters[j][i].reset(gyros[i][j]);
+      }
+    }
+    // for accelerometers
+    for(int j = 0; j < 3; j++) {
+      acc_filters[j].resize(command.size());
+      for(int i = 0; i < accelerometers.size(); i++) {
+        acc_filters[j][i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+        acc_filters[j][i].reset(accelerometers[i][j]);
+      }
+    }
+    firstcall = false;
+  }
+  //
+  for(int i = 0; i < gyros.size(); i++){
+    for (int j = 0; j < 3; j++) {
+      s_shm->body_omega[i][j] = gyro_filters[j][i].passFilter(gyros[i][j]);
+    }
+  }
+  //
+  for(int i = 0; i < accelerometers.size(); i++){
+    for (int j = 0; j < 3; j++) {
+      s_shm->body_acc[i][j] = acc_filters[j][i].passFilter(accelerometers[i][j]);
+    }
+  }
+#else
   //
   for(int i = 0; i < gyros.size(); i++) {
     for(int j = 0; j < 3; j++) {
@@ -1181,6 +1255,7 @@ void write_shared_memory ()
       s_shm->body_acc[i][j] = accelerometers[i][j];
     }
   }
+#endif
 
   if(!!ekfilter_ptr) {
     Eigen::Vector3d gyro(s_shm->body_omega[0][0],
