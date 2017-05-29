@@ -1,9 +1,9 @@
 add_definitions(-DHRPSYS_PACKAGE_VERSION=\"\\"${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}\\"\")
 
 # hrpIo
-add_library(hrpIo_choreonoid SHARED iob.cpp)
+add_library(hrpIo_choreonoid SHARED iob.cpp ${ROBOTHARDWARE_SOURCE}/../TorqueFilter/IIRFilter.cpp)
 #add_dependencies(hrpIo_choreonoid hrpsys_choreonoid_msgs_gencpp)
-include_directories(${ROBOTHARDWARE_SOURCE})
+include_directories(${ROBOTHARDWARE_SOURCE} ${ROBOTHARDWARE_SOURCE}/../)### for using IIRFilter
 
 if (NOT APPLE AND NOT QNXNTO)
    target_link_libraries(hrpIo_choreonoid rt)
@@ -14,7 +14,7 @@ target_link_libraries(hrpIo_choreonoid roscpp rostime)
 # RobotHardware
 #set(comp_source  ${ROBOTHARDWARE_SOURCE}/robot.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardware.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardwareService_impl.cpp)
 message ("RobotHardware source directory: ${ROBOTHARDWARE_SOURCE}")
-set(comp_source  ${ROBOTHARDWARE_SOURCE}/robot.cpp RobotHardware_choreonoid.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardware.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardwareService_impl.cpp)
+set(comp_source  ${ROBOTHARDWARE_SOURCE}/robot.cpp RobotHardware_choreonoid.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardware.cpp ${ROBOTHARDWARE_SOURCE}/RobotHardwareService_impl.cpp )
 set(libs hrpIo_choreonoid hrpModel-3.1 hrpCollision-3.1 hrpUtil-3.1 hrpsysBaseStub)
 
 add_library(RobotHardware_choreonoid SHARED ${comp_source})

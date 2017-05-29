@@ -17,6 +17,7 @@
 
 #include "RobotHardware_choreonoid.h"
 #include "ExtKalmanFilter.h"
+#include "TorqueFilter/IIRFilter.h"
 
 static std::vector<double> command;
 static std::vector<double> act_angle;
@@ -104,6 +105,7 @@ void *set_shared_memory(key_t _key, size_t _size);
 void write_shared_memory ();
 void read_shared_memory ();
 ///
+
 
 #if (defined __APPLE__)
 typedef int clockid_t;
@@ -1115,19 +1117,40 @@ void *set_shared_memory(key_t _key, size_t _size)
   return ptr;
 }
 
+
+
+std::vector<IIRFilter> q_filters;
+
 void read_shared_memory ()
 {
   if(s_shm->cmd_lock > 0) {
     iob_step = s_shm->cmd_lock;
     s_shm->cmd_lock = 0;
   }
-  for(int i = 0; i < command.size(); i++) {
-    command[i] = s_shm->ref_angle[i];
+  // for(int i = 0; i < command.size(); i++) {
+  //   command[i] = s_shm->ref_angle[i];
+  // }
+
+  // khanh IIR filter
+  static bool firstcall = true;
+
+  if(firstcall){
+    q_filters.resize(command.size());
+    for(int i=0;i<command.size();i++){
+      q_filters[i].setParameterAsBiquad(3, 1.0/2.0, 1/dt);
+      q_filters[i].reset(s_shm->ref_angle[i]);
+    }
+    firstcall = false;
   }
+  for(int i=0;i<command.size();i++){
+    command[i] = q_filters[i].passFilter(s_shm->ref_angle[i]);
+  }
+
   // khanh simple filter
   // for(int i = 0; i < command.size(); i++) {
   //   command[i] = 0.01 * s_shm->ref_angle[i] + 0.99 * command[i];
   // }
+
 }
 
 void write_shared_memory ()
