@@ -107,8 +107,8 @@ void read_shared_memory ();
 ///
 
 //#define Q_FILTER 1
-#define GYRO_ACCEL_FILTER 1
-#define CUR_ANGLE_FILTER 1
+//#define GYRO_ACCEL_FILTER 1
+//#define CUR_ANGLE_FILTER 1
 
 #if (defined __APPLE__)
 typedef int clockid_t;
@@ -1181,7 +1181,7 @@ void write_shared_memory ()
   if (firstcall2) {
     cur_angle_filters.resize(act_angle.size());
     for (int i = 0; i < act_angle.size(); i++) {
-      cur_angle_filters[i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+      cur_angle_filters[i].setParameterAsBiquad(10, 1.0/2.0, 1/dt);
       cur_angle_filters[i].reset(act_angle[i]);
     }
     firstcall2 = false;
@@ -1216,7 +1216,7 @@ void write_shared_memory ()
     for(int j = 0; j < 3; j++) {
       gyro_filters[j].resize(command.size());
       for(int i = 0; i < gyros.size(); i++) {
-        gyro_filters[j][i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+        gyro_filters[j][i].setParameterAsBiquad(100, 1.0/2.0, 1/dt);
         gyro_filters[j][i].reset(gyros[i][j]);
       }
     }
@@ -1224,7 +1224,7 @@ void write_shared_memory ()
     for(int j = 0; j < 3; j++) {
       acc_filters[j].resize(command.size());
       for(int i = 0; i < accelerometers.size(); i++) {
-        acc_filters[j][i].setParameterAsBiquad(50, 1.0/2.0, 1/dt);
+        acc_filters[j][i].setParameterAsBiquad(100, 1.0/2.0, 1/dt);
         acc_filters[j][i].reset(accelerometers[i][j]);
       }
     }
