@@ -4,7 +4,9 @@
 (unless (ros::ok)
   (ros::roseus "choreonoid_service_client"))
 
-(defun reset-position (&key (robot "JAXON_RED")
+(defvar *robot-name* (or (unix::getenv "ROBOT") "JAXON_RED"))
+
+(defun reset-position (&key (robot *robot-name*)
                             (coords (make-coords :pos (float-vector 0 0 1000)))
                             (sleep 0.05) &allow-other-keys)
   (let ((pos (send coords :worldpos))
@@ -20,7 +22,7 @@
     (ros::service-call "/choreonoid_service" req)
     ))
 
-(defun add-external-force (&key (robot "JAXON_RED")
+(defun add-external-force (&key (robot *robot-name*)
                                 (link "WAIST")
                                 (pos (float-vector 0 0 100)) ;; mm
                                 (force (float-vector 100 0 0)) ;; N
@@ -38,7 +40,7 @@
     (ros::service-call "/choreonoid_service" req)
     ))
 
-(defun pause-simulation (&key (robot "JAXON_RED"))
+(defun pause-simulation (&key (robot *robot-name*))
   (let ((req
          (instance roseus::StringStringRequest
                    :init :str
@@ -46,7 +48,7 @@
     (ros::service-call "/choreonoid_service" req)
     ))
 
-(defun restart-simulation (&key (robot "JAXON_RED"))
+(defun restart-simulation (&key (robot *robot-name*))
   (let ((req
          (instance roseus::StringStringRequest
                    :init :str
@@ -54,7 +56,7 @@
     (ros::service-call "/choreonoid_service" req)
     ))
 
-(defun add-object-to-simulation (name filename &key (robot "JAXON_RED") (coords))
+(defun add-object-to-simulation (name filename &key (robot *robot-name*) (coords))
   ;; add as a static object
   (let ((reqstr
          (format nil "addObject('~A','~A'" name filename)))
@@ -74,7 +76,7 @@
                                  :init :str reqstr))
     ))
 
-(defun get-coords-on-simulation (&key (robot "JAXON_RED") (link "WAIST"))
+(defun get-coords-on-simulation (&key (robot *robot-name*) (link "WAIST"))
   (let ((req
          (instance roseus::StringStringRequest
                    :init :str
