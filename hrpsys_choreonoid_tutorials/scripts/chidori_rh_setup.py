@@ -34,10 +34,11 @@ class CHIDORI_HrpsysConfigurator(ChoreonoidHrpsysConfigurator):
         self.Groups = [rleg_group, lleg_group]
 
     def startABSTIMP (self):
-        self.startAutoBalancer()
+        pass
+        #self.startAutoBalancer()
         #self.ic_svc.startImpedanceController("larm")
         #self.ic_svc.startImpedanceController("rarm")
-        self.startStabilizer()
+        #self.startStabilizer()
 
 if __name__ == '__main__':
     hcf = CHIDORI_HrpsysConfigurator("CHIDORI")
