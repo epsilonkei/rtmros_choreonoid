@@ -191,6 +191,13 @@ if (${jsk_models_FOUND})
 endif()
 
 ###
+#ML1 conid
+###
+if (${jsk_models_FOUND})
+  configure_file(${PROJECT_SOURCE_DIR}/config/ML1_RH_FLAT.cnoid.in ${PROJECT_SOURCE_DIR}/config/ML1_RH_FLAT.cnoid @ONLY)
+endif()
+
+###
 # scene.yaml
 ###
 configure_file(${PROJECT_SOURCE_DIR}/config/flat.yaml.in ${PROJECT_SOURCE_DIR}/config/flat.yaml @ONLY)
