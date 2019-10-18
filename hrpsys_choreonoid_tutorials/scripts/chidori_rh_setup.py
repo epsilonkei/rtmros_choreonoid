@@ -12,7 +12,7 @@ class CHIDORI_HrpsysConfigurator(ChoreonoidHrpsysConfigurator):
             # ['tf', "TorqueFilter"],
             ['kf', "KalmanFilter"],
             # ['vs', "VirtualForceSensor"],
-            # ['rmfo', "RemoveForceSensorLinkOffset"],
+            ['rmfo', "RemoveForceSensorLinkOffset"],
             # ['es', "EmergencyStopper"],
             # ['rfu', "ReferenceForceUpdater"],
             # ['octd', "ObjectContactTurnaroundDetector"],
@@ -22,9 +22,9 @@ class CHIDORI_HrpsysConfigurator(ChoreonoidHrpsysConfigurator):
             # ['tc', "TorqueController"],
             # ['te', "ThermoEstimator"],
             # ['tl', "ThermoLimiter"],
-            # ['co', "CollisionDetector"],
+            ['co', "CollisionDetector"],
             # ['hes', "EmergencyStopper"],
-            # ['el', "SoftErrorLimiter"],
+            ['el', "SoftErrorLimiter"],
             ['log', "DataLogger"]
             ]
 
