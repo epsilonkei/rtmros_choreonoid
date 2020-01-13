@@ -190,6 +190,7 @@ endif()
 if (${jsk_models_FOUND})
   configure_file(${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_FLAT.cnoid.in ${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_FLAT.cnoid @ONLY)
   configure_file(${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_ROT180.cnoid.in ${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_ROT180.cnoid @ONLY)
+  configure_file(${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_ROT180TERRAIN.cnoid.in ${PROJECT_SOURCE_DIR}/config/CHIDORI_RH_ROT180TERRAIN.cnoid @ONLY)
 endif()
 
 ###
