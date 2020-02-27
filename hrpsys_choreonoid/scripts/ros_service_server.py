@@ -11,6 +11,9 @@ setattr(sys, 'argv', [''])
 import rospy
 from roseus.srv import *
 
+import os
+ROBOT_NAME = os.getenv("ROBOT") or "CHIDORI"
+
 thisSimulatorItem = None
 
 def roscallback (req):
@@ -26,8 +29,8 @@ def ros_service_init ():
     s = rospy.Service('/choreonoid_service', StringString, roscallback)
     ## rospy.spin()
 
-def addExternalForce(robotname = "JAXON_RED", linkname = "WAIST", pos = [0,0,1.0], force = [100,0,0], tm = 0.2):
-    #addExternalForce("JAXON_RED", "WAIST", [0, 0, 1.0], [100, 0, 0], 0.2)
+def addExternalForce(robotname = ROBOT_NAME, linkname = "WAIST", pos = [0,0,1.0], force = [100,0,0], tm = 0.2):
+    #addExternalForce(ROBOT_NAME, "WAIST", [0, 0, 1.0], [100, 0, 0], 0.2)
     global thisSimulatorItem
 
     robotItem = cnoid.Base.RootItem.instance().findItem(robotname)
@@ -46,8 +49,8 @@ def addExternalForce(robotname = "JAXON_RED", linkname = "WAIST", pos = [0,0,1.0
 
     return '(:fail "invalid link: %s")'%(linkname)
 
-def resetPosition(robotname = "JAXON_RED", pos = [0,0,1.0], rpy = [0,0,0], sleep = 0.2):
-    #resetPosition("JAXON_RED", [0, 0, 1.0], [0, 0, 0])
+def resetPosition(robotname = ROBOT_NAME, pos = [0,0,1.0], rpy = [0,0,0], sleep = 0.2):
+    #resetPosition(ROBOT_NAME, [0, 0, 1.0], [0, 0, 0])
     global thisSimulatorItem
 
     robotItem = cnoid.Base.RootItem.instance().findItem(robotname)
@@ -105,7 +108,7 @@ def addObject(objname, filename, translation = None, rotation = None):
 
     return '(:success)'
 
-def callSimulation(robotname = "JAXON_RED", call = 'pauseSimulation'):
+def callSimulation(robotname = ROBOT_NAME, call = 'pauseSimulation'):
     global thisSimulatorItem
 
     robotItem = cnoid.Base.RootItem.instance().findItem(robotname)
@@ -121,7 +124,7 @@ def callSimulation(robotname = "JAXON_RED", call = 'pauseSimulation'):
 
     return '(:success "%s")'%(ret)
 
-def getCoordinate(robotname = 'JAXON_RED', linkname = 'WAIST'):
+def getCoordinate(robotname = ROBOT_NAME, linkname = 'WAIST'):
     robotItem = cnoid.Base.RootItem.instance().findItem(robotname)
     if robotItem == None:
         return '(:fail "invalid robotname %s")'%(robotname)
